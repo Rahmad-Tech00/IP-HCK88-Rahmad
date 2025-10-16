@@ -1,15 +1,36 @@
-import axios from 'axios'
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
+import { fetchSynopsis } from '../helpers/openai'
 
-// API Server Backend
-export const API = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE || 'http://127.0.0.1:4000'
-})
-
-// Interceptor untuk menambahkan token ke setiap request
-API.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token')
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`
+export const getSynopsis = createAsyncThunk(
+  'openai/getSynopsis',
+  async ({ title, authors }) => {
+    const text = await fetchSynopsis({ title, authors })
+    return { key: `${title}|${(authors||[]).join(',')}`, text }
   }
-  return config
+)
+
+const openaiSlice = createSlice({
+  name: 'openai',
+  initialState: {
+    byKey: {},     // { 'title|authors': 'synopsis text' }
+    status: 'idle', // idle | loading | succeeded | failed
+    error: null
+  },
+  reducers: {},
+  extraReducers: (builder) => {
+    builder
+      .addCase(getSynopsis.pending, (state) => {
+        state.status = 'loading'
+      })
+      .addCase(getSynopsis.fulfilled, (state, action) => {
+        state.status = 'succeeded'
+        state.byKey[action.payload.key] = action.payload.text
+      })
+      .addCase(getSynopsis.rejected, (state, action) => {
+        state.status = 'failed'
+        state.error = action.error.message
+      })
+  }
 })
+
+export default openaiSlice.reducer

@@ -28,22 +28,35 @@ export const login = createAsyncThunk(
   }
 )
 
+// Google Login thunk
+export const loginGoogle = createAsyncThunk(
+  'auth/loginGoogle',
+  async (credential, { rejectWithValue }) => {
+    try {
+      console.log('[AUTH SLICE] Sending Google credential:', credential?.substring(0, 50) + '...')
+      const { data } = await API.post('/auth/google-login', { credential })
+      console.log('[AUTH SLICE] Google login success:', data)
+      return { 
+        token: data.access_token, 
+        user: data.user
+      }
+    } catch (error) {
+      console.error('[AUTH SLICE] Google login error:', error.response?.data || error.message)
+      console.error('[AUTH SLICE] Full error:', error)
+      return rejectWithValue(error.response?.data?.message || error.message)
+    }
+  }
+)
+
 const authSlice = createSlice({
   name:'auth',
   initialState: { ...initial, status: 'idle', error: null },
   reducers:{
-    loginGoogle(state, {payload}) {
-      // payload = google id_token (JWT)
-      // Demo: decode yang sederhana (tanpa verify)
-      const parts = payload.split('.')[1]
-      const info = JSON.parse(atob(parts.replace(/-/g,'+').replace(/_/g,'/')))
-      state.user = { name: info.name || info.email, email: info.email, picture: info.picture }
-      state.token = payload
-      saveJSON('bt_auth', state)
-    },
     logout(state){
       state.user = null; state.token = null
       saveJSON('bt_auth', state)
+      // Clear favorites when logout
+      localStorage.removeItem('bt_favs')
     }
   },
   extraReducers: (builder) => {
@@ -79,8 +92,25 @@ const authSlice = createSlice({
         state.status = 'failed'
         state.error = action.error.message
       })
+    
+    // Google Login
+    builder
+      .addCase(loginGoogle.pending, (state) => {
+        state.status = 'loading'
+        state.error = null
+      })
+      .addCase(loginGoogle.fulfilled, (state, {payload}) => {
+        state.status = 'succeeded'
+        state.user = payload.user
+        state.token = payload.token
+        saveJSON('bt_auth', state)
+      })
+      .addCase(loginGoogle.rejected, (state, action) => {
+        state.status = 'failed'
+        state.error = action.error.message
+      })
   }
 })
 
-export const { loginGoogle, logout } = authSlice.actions
+export const { logout } = authSlice.actions
 export default authSlice.reducer

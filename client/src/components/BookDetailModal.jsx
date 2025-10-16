@@ -2,9 +2,9 @@ import { useSelector } from 'react-redux'
 
 export default function BookDetailModal({ book, onClose }){
   const key = book ? `${book.title}|${(book.authors||[]).join(',')}` : null
-  const synopsis = useSelector(s=> key ? s.openai.byKey[key] : '')
-  const status = useSelector(s=> s.openai.status)
-  const error = useSelector(s=> s.openai.error)
+  const synopsis = useSelector(s=> key ? (s.openai.byKey?.[key] || '') : '')
+  const status = useSelector(s=> s.openai?.status || 'idle')
+  const error = useSelector(s=> s.openai?.error || null)
 
   // Placeholder untuk buku tanpa cover
   const placeholderStyle = {

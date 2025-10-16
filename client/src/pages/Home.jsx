@@ -5,11 +5,20 @@ import BookGrid from '../components/BookGrid'
 import BookDetailModal from '../components/BookDetailModal'
 import InfiniteScrollAnchor from '../components/InfiniteScrollAnchor'
 import { reset, searchBooks, setQuery } from '../features/booksSlice'
+import { fetchFavorites } from '../features/favoritesSlice'
+import { isAuthenticated } from '../helpers/auth'
 
 export default function Home(){
   const dispatch = useDispatch()
   const { items, total, page, status, q } = useSelector(s=>s.books)
   const [detail, setDetail] = useState(null)
+
+  // Fetch favorites on mount if user is logged in
+  useEffect(() => {
+    if (isAuthenticated()) {
+      dispatch(fetchFavorites())
+    }
+  }, [dispatch])
 
   const onSearch = useCallback(({q}) => {
     // Hanya reset jika query berbeda dengan yang sebelumnya

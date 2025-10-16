@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react'
-import { debounce } from '../helpers/debaunce'
+import { debounce } from '../helpers/debounce'
 
 export default function SearchBar({ onSearch }) {
   const [q, setQ] = useState('')

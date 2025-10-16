@@ -4,7 +4,7 @@ import BookGrid from '../components/BookGrid'
 export default function Favorites(){
   const favIds = useSelector(s=>s.favorites.ids)
   const all = useSelector(s=>s.books.items)
-  const items = all.filter(b => favIds.includes(b.openLibId))
+  const items = all.filter(b => favIds.includes(b.id))
 
   return (
     <>
