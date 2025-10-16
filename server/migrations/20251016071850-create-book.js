@@ -6,7 +6,7 @@ module.exports = {
       id: { allowNull: false, autoIncrement: true, primaryKey: true, type: Sequelize.INTEGER },
       openLibraryId: { type: Sequelize.STRING },
       title: { type: Sequelize.STRING, allowNull: false },
-      authors: { type: Sequelize.JSONB },       // Postgres JSONB
+      authors: { type: Sequelize.JSONB },
       coverUrl: { type: Sequelize.STRING },
       pages: { type: Sequelize.INTEGER },
       publishedYear: { type: Sequelize.INTEGER },

@@ -1,5 +1,4 @@
-const db = require('../models');          // <-- perbaiki path
-// sisanya sama
+const db = require('../models');
 
 
 module.exports = {
@@ -18,7 +17,6 @@ module.exports = {
     try {
       const { BookId, status, shelfName, currentPage } = req.body;
       
-      // Convert empty strings to null for integer fields
       const cleanCurrentPage = currentPage === '' || currentPage === null || currentPage === undefined ? null : parseInt(currentPage);
       
       const row = await db.UserBook.create({ 
@@ -42,7 +40,6 @@ module.exports = {
       if (!row) return res.status(404).json({ message: 'Not found' });
       const { status, shelfName, currentPage, isFavorite } = req.body;
       
-      // Convert empty strings to null for integer fields
       const cleanCurrentPage = currentPage === '' || currentPage === null || currentPage === undefined ? null : parseInt(currentPage);
       
       await row.update({ 

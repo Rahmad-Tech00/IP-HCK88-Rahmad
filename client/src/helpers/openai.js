@@ -7,10 +7,9 @@ export async function fetchSynopsis({ title, authors }) {
 Judul: ${title}
 Penulis: ${(authors||[]).join(', ')}
 
-Berikan ringkasan dalam 3-5 kalimat, bahasa Indonesia, padat dan informatif.`
+Berikan ringkasan dalam 3-5 kalimat yang lengkap, bahasa Indonesia, padat dan informatif. Pastikan kalimat terakhir lengkap dan tidak terpotong.`
 
-  // Gemini API endpoint
-  const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${key}`, {
+  const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${key}`, {
     method:'POST',
     headers:{
       'Content-Type':'application/json',
@@ -23,7 +22,7 @@ Berikan ringkasan dalam 3-5 kalimat, bahasa Indonesia, padat dan informatif.`
       }],
       generationConfig: {
         temperature: 0.7,
-        maxOutputTokens: 1024,
+        maxOutputTokens: 2048,
       }
     })
   })
@@ -34,5 +33,15 @@ Berikan ringkasan dalam 3-5 kalimat, bahasa Indonesia, padat dan informatif.`
   }
   
   const json = await resp.json()
-  return json?.candidates?.[0]?.content?.parts?.[0]?.text || ''
+  
+  console.log('Gemini API Response:', json)
+  
+  const text = json?.candidates?.[0]?.content?.parts?.[0]?.text || ''
+  
+  if (!text) {
+    console.error('No text in Gemini response:', json)
+    throw new Error('Gemini returned empty response')
+  }
+  
+  return text
 }

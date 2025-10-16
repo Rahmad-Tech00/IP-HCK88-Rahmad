@@ -1,7 +1,7 @@
 export function initGoogle(callback) {
   const id = import.meta.env.VITE_GOOGLE_CLIENT_ID
   if (!id) { console.warn('Missing VITE_GOOGLE_CLIENT_ID'); return }
-  // inject script once
+
   if (!document.getElementById('google-client')) {
     const s = document.createElement('script')
     s.src = 'https://accounts.google.com/gsi/client'
@@ -19,7 +19,7 @@ export function initGoogle(callback) {
     if (!window.google?.accounts?.id) return
     google.accounts.id.initialize({
       client_id: id,
-      callback: (resp)=> cb(resp.credential) // JWT from Google
+      callback: (resp)=> cb(resp.credential)
     })
     const div = document.getElementById('googleSignInDiv')
     if (div) {

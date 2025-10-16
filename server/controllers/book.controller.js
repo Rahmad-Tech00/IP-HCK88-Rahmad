@@ -1,6 +1,5 @@
-const db = require('../models');          // <-- perbaiki path
+const db = require('../models');
 const { Op } = db.Sequelize;
-// sisanya sama
 
 
 module.exports = {

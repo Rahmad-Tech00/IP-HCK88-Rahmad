@@ -9,7 +9,7 @@ export default function BookCard({ book, onOpenDetail }){
   const dispatch = useDispatch()
   const favIds = useSelector(s=>s.favorites.ids)
   const openaiStatus = useSelector(s=>s.openai.status)
-  const bookId = book.id  // Use database ID for favorites
+  const bookId = book.id
   const isFav = favIds.includes(bookId)
 
   const handleToggleFavorite = async () => {
@@ -31,7 +31,6 @@ export default function BookCard({ book, onOpenDetail }){
     } catch (error) {
       console.error('Toggle favorite error:', error)
       
-      // Check if error is 401 Unauthorized
       if (error.message && error.message.includes('401')) {
         localStorage.removeItem('bt_auth')
         Swal.fire({
@@ -70,7 +69,6 @@ export default function BookCard({ book, onOpenDetail }){
     }
     // Generate synopsis dengan Gemini AI
     await dispatch(getSynopsis({ title: book.title, authors: book.authors }))
-    // Buka modal detail setelah synopsis selesai
     onOpenDetail(book)
   }
 
@@ -148,7 +146,6 @@ export default function BookCard({ book, onOpenDetail }){
     }
   }
 
-  // Placeholder untuk buku tanpa cover
   const placeholderStyle = {
     height: '300px',
     backgroundColor: '#e9ecef',

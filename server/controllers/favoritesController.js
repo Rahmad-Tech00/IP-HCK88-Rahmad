@@ -1,7 +1,6 @@
 const { UserBook } = require('../models')
 
 module.exports = {
-  // GET /apis/favorites - Get user's favorite books
   getFavorites: async (req, res, next) => {
     try {
       const userId = req.user.id
@@ -22,13 +21,11 @@ module.exports = {
     }
   },
 
-  // POST /apis/favorites/:bookId - Toggle favorite status
   toggleFavorite: async (req, res, next) => {
     try {
       const userId = req.user.id
       const bookId = +req.params.bookId
       
-      // Find or create UserBook entry
       const [userBook, created] = await UserBook.findOrCreate({
         where: { UserId: userId, BookId: bookId },
         defaults: { 
@@ -40,7 +37,6 @@ module.exports = {
       })
       
       if (!created) {
-        // Toggle favorite status
         userBook.isFavorite = !userBook.isFavorite
         await userBook.save()
       }

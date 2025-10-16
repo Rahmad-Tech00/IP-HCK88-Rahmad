@@ -12,8 +12,8 @@ export const getSynopsis = createAsyncThunk(
 const openaiSlice = createSlice({
   name: 'openai',
   initialState: {
-    byKey: {},     // { 'title|authors': 'synopsis text' }
-    status: 'idle', // idle | loading | succeeded | failed
+    byKey: {},
+    status: 'idle',
     error: null
   },
   reducers: {},

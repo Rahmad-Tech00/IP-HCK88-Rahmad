@@ -1,5 +1,5 @@
 const { verify } = require('../helpers/jwt');
-const db = require('../models'); // <-- perbaiki path
+const db = require('../models');
 
 module.exports = async (req, res, next) => {
   try {

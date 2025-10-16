@@ -1,7 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import { API } from '../helpers/api'
 
-// Async thunks
 export const fetchUserBooks = createAsyncThunk(
   'userBooks/fetchUserBooks',
   async (_, { rejectWithValue }) => {
@@ -54,7 +53,7 @@ const userBooksSlice = createSlice({
   name: 'userBooks',
   initialState: {
     items: [],
-    status: 'idle', // idle | loading | succeeded | failed
+    status: 'idle',
     error: null
   },
   reducers: {
@@ -66,7 +65,6 @@ const userBooksSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // Fetch User Books
       .addCase(fetchUserBooks.pending, (state) => {
         state.status = 'loading'
       })
@@ -79,12 +77,10 @@ const userBooksSlice = createSlice({
         state.error = action.payload
       })
       
-      // Add to Shelf
       .addCase(addToShelf.fulfilled, (state, action) => {
         state.items.unshift(action.payload)
       })
       
-      // Update User Book
       .addCase(updateUserBook.fulfilled, (state, action) => {
         const index = state.items.findIndex(item => item.id === action.payload.id)
         if (index !== -1) {
@@ -92,7 +88,6 @@ const userBooksSlice = createSlice({
         }
       })
       
-      // Remove from Shelf
       .addCase(removeFromShelf.fulfilled, (state, action) => {
         state.items = state.items.filter(item => item.id !== action.payload)
       })

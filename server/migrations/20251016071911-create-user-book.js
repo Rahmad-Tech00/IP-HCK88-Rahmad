@@ -19,13 +19,13 @@ module.exports = {
         onDelete: 'CASCADE', onUpdate: 'CASCADE'
       },
 
-      status: {                                    // kalau mau status global di luar shelf
+      status: {
         type: Sequelize.ENUM('to-read','reading','finished'),
         allowNull: false,
         defaultValue: 'to-read'
       },
 
-      shelfName: { type: Sequelize.STRING },       // opsional (custom shelf)
+      shelfName: { type: Sequelize.STRING },
       currentPage: { type: Sequelize.INTEGER },
       isFavorite: { type: Sequelize.BOOLEAN, defaultValue: false },
 

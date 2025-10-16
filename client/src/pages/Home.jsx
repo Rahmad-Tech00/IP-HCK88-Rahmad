@@ -13,7 +13,6 @@ export default function Home(){
   const { items, total, page, status, q } = useSelector(s=>s.books)
   const [detail, setDetail] = useState(null)
 
-  // Fetch favorites on mount if user is logged in
   useEffect(() => {
     if (isAuthenticated()) {
       dispatch(fetchFavorites())
@@ -21,13 +20,11 @@ export default function Home(){
   }, [dispatch])
 
   const onSearch = useCallback(({q}) => {
-    // Hanya reset jika query berbeda dengan yang sebelumnya
     const currentQ = q || ''
     dispatch(reset())
     dispatch(setQuery({q: currentQ}))
   }, [dispatch])
 
-  // fetch saat query berubah (termasuk saat kosong/semua buku)
   useEffect(()=>{
     dispatch(searchBooks({ q }))
   },[q, dispatch])

@@ -2,7 +2,6 @@
 
 module.exports = {
   async up(queryInterface, Sequelize) {
-    // Change 'finished' to 'completed' in UserBooks status ENUM
     await queryInterface.sequelize.query(`
       ALTER TYPE "enum_UserBooks_status" 
       RENAME VALUE 'finished' TO 'completed';

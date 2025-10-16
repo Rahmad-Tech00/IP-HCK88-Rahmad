@@ -1,7 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import { API } from '../helpers/api'
 
-// Async thunks
 export const fetchEntries = createAsyncThunk(
   'entries/fetchEntries',
   async (_, { rejectWithValue }) => {
@@ -54,7 +53,7 @@ const entriesSlice = createSlice({
   name: 'entries',
   initialState: {
     items: [],
-    status: 'idle', // idle | loading | succeeded | failed
+    status: 'idle',
     error: null
   },
   reducers: {
@@ -66,7 +65,6 @@ const entriesSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // Fetch Entries
       .addCase(fetchEntries.pending, (state) => {
         state.status = 'loading'
       })
@@ -79,12 +77,10 @@ const entriesSlice = createSlice({
         state.error = action.payload
       })
       
-      // Create Entry
       .addCase(createEntry.fulfilled, (state, action) => {
         state.items.unshift(action.payload)
       })
       
-      // Update Entry
       .addCase(updateEntry.fulfilled, (state, action) => {
         const index = state.items.findIndex(item => item.id === action.payload.id)
         if (index !== -1) {
@@ -92,7 +88,6 @@ const entriesSlice = createSlice({
         }
       })
       
-      // Delete Entry
       .addCase(deleteEntry.fulfilled, (state, action) => {
         state.items = state.items.filter(item => item.id !== action.payload)
       })

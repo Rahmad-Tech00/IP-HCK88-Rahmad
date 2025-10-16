@@ -5,13 +5,11 @@ export default function ProtectedRoute({ children }) {
   const { user, token } = useSelector(s => s.auth)
 
   useEffect(() => {
-    // Redirect ke auth jika belum login
     if (!user || !token) {
       window.location.hash = '#/auth'
     }
   }, [user, token])
 
-  // Jika belum login, tampilkan loading atau null
   if (!user || !token) {
     return (
       <div className="text-center py-5">
@@ -23,6 +21,5 @@ export default function ProtectedRoute({ children }) {
     )
   }
 
-  // Jika sudah login, render children
   return children
 }

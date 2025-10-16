@@ -17,7 +17,7 @@ export const toggleFavorite = createAsyncThunk(
   async (bookId, { rejectWithValue }) => {
     try {
       const { data } = await API.post(`/favorites/${bookId}`)
-      return data // { bookId, isFavorite }
+      return data
     } catch (error) {
       const message = error.response?.data?.message || error.message || 'Request failed with status code 401'
       return rejectWithValue(message)
@@ -29,7 +29,7 @@ const slice = createSlice({
   name:'favorites',
   initialState:{ 
     ids: [],
-    status: 'idle', // 'idle' | 'loading' | 'succeeded' | 'failed'
+    status: 'idle',
     error: null
   },
   
@@ -41,7 +41,6 @@ const slice = createSlice({
     }
   },
   extraReducers: (builder) => {
-    // Fetch favorites
     builder
       .addCase(fetchFavorites.pending, (state) => {
         state.status = 'loading'
@@ -55,22 +54,18 @@ const slice = createSlice({
         state.error = action.error.message
       })
     
-    // Toggle favorite
     builder
       .addCase(toggleFavorite.fulfilled, (state, action) => {
         const { bookId, isFavorite } = action.payload
         if (isFavorite) {
-          // Add to favorites
           if (!state.ids.includes(bookId)) {
             state.ids.push(bookId)
           }
         } else {
-          // Remove from favorites
           state.ids = state.ids.filter(id => id !== bookId)
         }
       })
     
-    // Clear favorites when user logs out
     builder.addCase(logout, (state) => {
       state.ids = []
       state.status = 'idle'

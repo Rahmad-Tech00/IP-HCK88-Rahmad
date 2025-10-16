@@ -8,16 +8,14 @@ import { fetchFavorites } from '../features/favoritesSlice'
 export default function AuthForm(){
   const dispatch = useDispatch()
   const { status } = useSelector(s => s.auth)
-  const [mode, setMode] = useState('login') // or 'register'
+  const [mode, setMode] = useState('login')
   const [form, setForm] = useState({ name:'', email:'', password:'' })
 
   useEffect(()=>{
     initGoogle(async (idToken)=> {
       try {
         await dispatch(loginGoogle(idToken)).unwrap()
-        // Fetch favorites after successful login
         dispatch(fetchFavorites())
-        // Success - show success message and redirect
         await Swal.fire({
           icon: 'success',
           title: 'Login Successful!',
@@ -51,7 +49,6 @@ export default function AuthForm(){
         setForm({ name:'', email:'', password:'' })
       } else {
         await dispatch(login({ email:form.email, password:form.password })).unwrap()
-        // Fetch favorites after successful login
         dispatch(fetchFavorites())
         await Swal.fire({
           icon: 'success',

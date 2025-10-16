@@ -49,7 +49,6 @@ module.exports = {
       }
       
       console.log('[GOOGLE LOGIN] Verifying token with Google...');
-      // Verify token dengan Google
       const ticket = await client.verifyIdToken({
         idToken: credential,
         audience: GOOGLE_CLIENT_ID,
@@ -59,23 +58,20 @@ module.exports = {
       const { email, name, picture } = payload;
       console.log('[GOOGLE LOGIN] Token verified. Email:', email, 'Name:', name);
       
-      // Cari atau buat user
       let user = await db.User.findOne({ where: { email } });
       
       if (!user) {
         console.log('[GOOGLE LOGIN] Creating new user from Google');
-        // User baru dari Google - password = "google_secret"
         user = await db.User.create({
           name: name || email.split('@')[0],
           email,
-          password: 'google_secret', // Plain text "google_secret", tidak di-hash
+          password: 'google_secret',
         });
         console.log('[GOOGLE LOGIN] New user created:', user.id);
       } else {
         console.log('[GOOGLE LOGIN] Existing user found:', user.id);
       }
       
-      // Generate JWT token untuk app
       const access_token = sign({ id: user.id, email: user.email });
       console.log('[GOOGLE LOGIN] Success! Sending token');
       res.json({ access_token, user: { id: user.id, email: user.email, name: user.name } });

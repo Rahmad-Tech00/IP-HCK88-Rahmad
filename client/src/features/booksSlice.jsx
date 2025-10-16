@@ -8,7 +8,6 @@ export const searchBooks = createAsyncThunk(
     const params = new URLSearchParams()
     if (q) params.set('q', q)
     const { data } = await API.get(`/books?${params.toString()}`)
-    // Response dari server: { data: [...books] }
     const books = mapServerBooks(data.data || [])
     return { docs: books, total: books.length, page: 1 }
   }

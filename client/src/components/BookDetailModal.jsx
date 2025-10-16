@@ -6,7 +6,6 @@ export default function BookDetailModal({ book, onClose }){
   const status = useSelector(s=> s.openai?.status || 'idle')
   const error = useSelector(s=> s.openai?.error || null)
 
-  // Placeholder untuk buku tanpa cover
   const placeholderStyle = {
     width: '100%',
     height: '400px',

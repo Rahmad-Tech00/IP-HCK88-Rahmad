@@ -14,7 +14,7 @@ module.exports = {
     const rows = JSON.parse(raw).map(u => ({
       name: u.name,
       email: u.email,
-      password: bcrypt.hashSync(u.password, 10), // HASH password
+      password: bcrypt.hashSync(u.password, 10),
       createdAt: now,
       updatedAt: now
     }));

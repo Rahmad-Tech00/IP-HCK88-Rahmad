@@ -1,5 +1,4 @@
-const db = require('../models');          // <-- perbaiki path
-// sisanya sama
+const db = require('../models');
 
 
 module.exports = {
@@ -20,7 +19,6 @@ module.exports = {
       
       const { UserBookId, type, content, page, rating } = req.body;
       
-      // Validate UserBook exists and belongs to user
       const ub = await db.UserBook.findOne({ where: { id: UserBookId, UserId: req.user.id } });
       console.log('[ENTRY CREATE] UserBook found:', ub ? ub.id : 'NOT FOUND');
       
@@ -32,7 +30,6 @@ module.exports = {
       
       console.log('[ENTRY CREATE] Creating entry with type:', type);
       
-      // Convert empty strings to null for integer fields
       const cleanPage = page === '' || page === null ? null : parseInt(page);
       const cleanRating = rating === '' || rating === null ? null : parseInt(rating);
       
@@ -44,7 +41,6 @@ module.exports = {
         rating: cleanRating 
       });
       
-      // Fetch the created entry with associations
       const entryWithBook = await db.UserBookEntry.findByPk(row.id, {
         include: [{ 
           model: db.UserBook, 
@@ -67,7 +63,6 @@ module.exports = {
       if (!row || row.UserBook.UserId !== req.user.id) return res.status(404).json({ message: 'Not found' });
       const { type, content, page, rating } = req.body;
       
-      // Convert empty strings to null for integer fields
       const cleanPage = page === '' || page === null ? null : parseInt(page);
       const cleanRating = rating === '' || rating === null ? null : parseInt(rating);
       
