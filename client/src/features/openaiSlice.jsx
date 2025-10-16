@@ -1,24 +1,15 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import { fetchSynopsis } from '../helpers/openai'
+import axios from 'axios'
 
-export const getSynopsis = createAsyncThunk(
-  'openai/synopsis',
-  async ({ title, authors }) => {
-    const content = await fetchSynopsis({ title, authors })
-    return { key: `${title}|${(authors||[]).join(',')}`, content }
-  }
-)
-
-const slice = createSlice({
-  name:'openai',
-  initialState:{ byKey:{}, status:'idle', error:null },
-  reducers:{},
-  extraReducers: b => {
-    b.addCase(getSynopsis.pending, s=>{ s.status='loading' })
-     .addCase(getSynopsis.fulfilled, (s,{payload})=>{
-       s.status='succeeded'; s.byKey[payload.key] = payload.content
-     })
-     .addCase(getSynopsis.rejected, (s,a)=>{ s.status='failed'; s.error=a.error.message })
-  }
+// API Server Backend
+export const API = axios.create({
+  baseURL: import.meta.env.VITE_API_BASE || 'http://127.0.0.1:4000'
 })
-export default slice.reducer
+
+// Interceptor untuk menambahkan token ke setiap request
+API.interceptors.request.use((config) => {
+  const token = localStorage.getItem('token')
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`
+  }
+  return config
+})

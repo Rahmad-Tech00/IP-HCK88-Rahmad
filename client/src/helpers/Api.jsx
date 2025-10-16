@@ -1,9 +1,15 @@
 import axios from 'axios'
 
-export const OL = axios.create({
-  baseURL: import.meta.env.VITE_OL_BASE || 'https://openlibrary.org'
+// API Server Backend
+export const API = axios.create({
+  baseURL: import.meta.env.VITE_API_BASE || 'http://127.0.0.1:4000'
 })
 
-export const COVER = axios.create({
-  baseURL: import.meta.env.VITE_COVER_BASE || 'https://covers.openlibrary.org'
+// Interceptor untuk menambahkan token ke setiap request
+API.interceptors.request.use((config) => {
+  const token = localStorage.getItem('token')
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`
+  }
+  return config
 })
