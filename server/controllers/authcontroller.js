@@ -22,6 +22,9 @@ module.exports = {
   login: async (req, res, next) => {
     try {
       const { email, password } = req.body;
+      if (!email || !password) {
+        throw { name: 'Unauthenticated', message: 'Email and password required' };
+      }
       const user = await db.User.findOne({ where: { email } });
       if (!user || !bcrypt.compareSync(password, user.password)) {
         throw { name: 'Unauthenticated' };

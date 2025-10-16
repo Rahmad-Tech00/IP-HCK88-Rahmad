@@ -17,6 +17,14 @@ module.exports = {
     try {
       const { BookId, status, shelfName, currentPage } = req.body;
       
+      // Validate status
+      const validStatuses = ['reading', 'completed', 'want-to-read'];
+      if (status && !validStatuses.includes(status)) {
+        return res.status(400).json({ 
+          message: `Invalid status. Must be one of: ${validStatuses.join(', ')}` 
+        });
+      }
+      
       const cleanCurrentPage = currentPage === '' || currentPage === null || currentPage === undefined ? null : parseInt(currentPage);
       
       const row = await db.UserBook.create({ 
@@ -58,7 +66,7 @@ module.exports = {
       const row = await db.UserBook.findOne({ where: { id: req.params.id, UserId: req.user.id } });
       if (!row) return res.status(404).json({ message: 'Not found' });
       await row.destroy();
-      res.status(204).end();
+      res.json({ message: 'Book removed from shelf' });
     } catch (e) { next(e); }
   }
 };

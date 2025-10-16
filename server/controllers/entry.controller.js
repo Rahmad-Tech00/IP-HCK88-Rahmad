@@ -19,6 +19,19 @@ module.exports = {
       
       const { UserBookId, type, content, page, rating } = req.body;
       
+      // Validate UserBookId
+      if (!UserBookId) {
+        return res.status(400).json({ message: 'UserBookId is required' });
+      }
+      
+      // Validate type
+      const validTypes = ['note', 'highlight', 'quote', 'review'];
+      if (!type || !validTypes.includes(type)) {
+        return res.status(400).json({ 
+          message: `Invalid type. Must be one of: ${validTypes.join(', ')}` 
+        });
+      }
+      
       const ub = await db.UserBook.findOne({ where: { id: UserBookId, UserId: req.user.id } });
       console.log('[ENTRY CREATE] UserBook found:', ub ? ub.id : 'NOT FOUND');
       
@@ -30,8 +43,16 @@ module.exports = {
       
       console.log('[ENTRY CREATE] Creating entry with type:', type);
       
-      const cleanPage = page === '' || page === null ? null : parseInt(page);
-      const cleanRating = rating === '' || rating === null ? null : parseInt(rating);
+      const cleanPage = page === '' || page === null || page === undefined ? null : parseInt(page);
+      const cleanRating = rating === '' || rating === null || rating === undefined ? null : parseInt(rating);
+      
+      // Extra safety check for NaN
+      if (cleanPage !== null && isNaN(cleanPage)) {
+        return res.status(400).json({ message: 'Invalid page number' });
+      }
+      if (cleanRating !== null && isNaN(cleanRating)) {
+        return res.status(400).json({ message: 'Invalid rating' });
+      }
       
       const row = await db.UserBookEntry.create({ 
         UserBookId, 
@@ -63,8 +84,16 @@ module.exports = {
       if (!row || row.UserBook.UserId !== req.user.id) return res.status(404).json({ message: 'Not found' });
       const { type, content, page, rating } = req.body;
       
-      const cleanPage = page === '' || page === null ? null : parseInt(page);
-      const cleanRating = rating === '' || rating === null ? null : parseInt(rating);
+      const cleanPage = page === '' || page === null || page === undefined ? null : parseInt(page);
+      const cleanRating = rating === '' || rating === null || rating === undefined ? null : parseInt(rating);
+      
+      // Extra safety check for NaN
+      if (cleanPage !== null && isNaN(cleanPage)) {
+        return res.status(400).json({ message: 'Invalid page number' });
+      }
+      if (cleanRating !== null && isNaN(cleanRating)) {
+        return res.status(400).json({ message: 'Invalid rating' });
+      }
       
       await row.update({ type, content, page: cleanPage, rating: cleanRating });
       res.json(row);
