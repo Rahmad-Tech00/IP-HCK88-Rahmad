@@ -28,7 +28,31 @@ async function fetchMany(queries, limitPerQ = 40) {
   const out = [];
   const seen = new Set();
   for (const q of queries) {
-    const url = `https://openlibrary.org/search.json?q=${encodeURIComponent(q)}&limit=${limitPerQ}`;
+    for (const q of queries) {
+    try {
+      const url = `https://openlibrary.org/search.json?q=${q}&limit=${limitPerQ}`;
+      let data = null;
+      try {
+        const r1 = await axios.get(url, { timeout: 15000 });
+        data = r1.data;
+      } catch (err) {
+        console.log(
+          `[seed-OpenLibrary] axios error for query "${q}": Continuing...`
+        );
+        data = await axios.get(url, { timeout: 15000 });
+        data = r1.data;
+      }
+      for (const d of data?.docs || []) {
+        const key = (d.key || "").replace("/works/", "").trim();
+        if (!key || seen.has(key)) continue;
+        seen.add(key);
+        out.push(mapDoc(d));
+      }
+    } catch (err) {
+      console.log(`[seed-OpenLibrary] fetch error for query "${q}":`);
+    }
+  }
+      const url = `https://openlibrary.org/search.json?q=${encodeURIComponent(q)}&limit=${limitPerQ}`;
     const { data } = await axios.get(url, { timeout: 15000 });
     for (const d of (data?.docs || [])) {
       const key = (d.key || '').replace('/works/', '').trim();
@@ -42,7 +66,7 @@ async function fetchMany(queries, limitPerQ = 40) {
 
 module.exports = {
   async up (queryInterface) {
-    const queries = [
+      const queries = [
       'javascript','node.js','web development','database',
       'software engineering','algorithms','react','http','api design'
     ];
@@ -53,6 +77,7 @@ module.exports = {
       return;
     }
     await queryInterface.bulkInsert('Books', rows);
+  
   },
 
   async down (queryInterface) {
