@@ -1,5 +1,5 @@
 // server.js (root)
-require('dotenv').config();
+// require('dotenv').config();
 const app = require('./app');
 
 const PORT = Number(process.env.PORT || 4000);
