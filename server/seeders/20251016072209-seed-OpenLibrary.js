@@ -52,6 +52,7 @@ async function fetchMany(queries, limitPerQ = 40) {
       console.log(`[seed-OpenLibrary] fetch error for query "${q}":`);
     }
   }
+    try {
       const url = `https://openlibrary.org/search.json?q=${encodeURIComponent(q)}&limit=${limitPerQ}`;
     const { data } = await axios.get(url, { timeout: 15000 });
     for (const d of (data?.docs || [])) {
@@ -60,12 +61,16 @@ async function fetchMany(queries, limitPerQ = 40) {
       seen.add(key);
       out.push(mapDoc(d));
     }
+    } catch (error) {
+      console.error('[fetchMany] error:', error);
+    }
   }
   return out;
 }
 
 module.exports = {
   async up (queryInterface) {
+    try {
       const queries = [
       'javascript','node.js','web development','database',
       'software engineering','algorithms','react','http','api design'
@@ -77,7 +82,9 @@ module.exports = {
       return;
     }
     await queryInterface.bulkInsert('Books', rows);
-  
+    } catch (error) {
+      console.error('[seed-OpenLibrary] error:', error);
+    }
   },
 
   async down (queryInterface) {
