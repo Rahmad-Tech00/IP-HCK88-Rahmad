@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BookTracker - Clear Cache</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .card {
+            background: white;
+            color: #333;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        h1 { color: #667eea; }
+        .status { 
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px 5px;
+        }
+        button:hover { background: #5568d3; }
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+        .env-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-left: 4px solid #667eea;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>🔧 BookTracker Debug Page</h1>
+        
+        <div id="status" class="status info">
+            Checking API connection...
+        </div>
+
+        <div class="env-info">
+            <h3>📋 Current Configuration:</h3>
+            <p><strong>API Base URL:</strong> <code id="apiUrl">Loading...</code></p>
+            <p><strong>Page URL:</strong> <code id="pageUrl"></code></p>
+            <p><strong>User Agent:</strong> <code id="userAgent"></code></p>
+        </div>
+
+        <h3>🧪 Actions:</h3>
+        <button onclick="testConnection()">Test API Connection</button>
+        <button onclick="clearCache()">Clear Cache & Reload</button>
+        <button onclick="goToApp()">Go to App</button>
+
+        <div id="result"></div>
+
+        <h3>📝 Manual Steps:</h3>
+        <ol>
+            <li>Press <code>Ctrl + Shift + R</code> (Windows) or <code>Cmd + Shift + R</code> (Mac)</li>
+            <li>Or open in Incognito/Private window</li>
+            <li>Clear browser cache in Settings</li>
+        </ol>
+    </div>
+
+    <script>
+        const API_BASE = 'http://3.104.54.173:4000/apis';
+        
+        // Display current info
+        document.getElementById('pageUrl').textContent = window.location.href;
+        document.getElementById('userAgent').textContent = navigator.userAgent;
+        document.getElementById('apiUrl').textContent = API_BASE;
+
+        async function testConnection() {
+            const status = document.getElementById('status');
+            const result = document.getElementById('result');
+            
+            status.className = 'status info';
+            status.textContent = '🔄 Testing connection to API...';
+            
+            try {
+                // Test health endpoint
+                const healthResponse = await fetch('http://3.104.54.173:4000/');
+                const healthData = await healthResponse.json();
+                
+                // Test books endpoint
+                const booksResponse = await fetch(API_BASE + '/books');
+                const booksData = await booksResponse.json();
+                
+                status.className = 'status success';
+                status.innerHTML = `
+                    ✅ <strong>API Connection Successful!</strong><br>
+                    Health Check: ${JSON.stringify(healthData)}<br>
+                    Books Count: ${booksData.data ? booksData.data.length : 0} books found
+                `;
+                
+                result.innerHTML = `
+                    <div class="env-info">
+                        <h4>✅ Connection Test Results:</h4>
+                        <p>✅ Server is reachable</p>
+                        <p>✅ Health endpoint: OK</p>
+                        <p>✅ Books endpoint: OK</p>
+                        <p>✅ CORS is configured correctly</p>
+                        <p><strong>Your app should work now! Try the app link above.</strong></p>
+                    </div>
+                `;
+            } catch (error) {
+                status.className = 'status error';
+                status.innerHTML = `
+                    ❌ <strong>Connection Failed!</strong><br>
+                    Error: ${error.message}<br>
+                    <small>Make sure the server is running on EC2</small>
+                `;
+                
+                result.innerHTML = `
+                    <div class="env-info" style="border-left-color: #dc3545;">
+                        <h4>❌ Connection Test Failed:</h4>
+                        <p><strong>Error Details:</strong> ${error.message}</p>
+                        <p><strong>Possible causes:</strong></p>
+                        <ul>
+                            <li>Server is not running on EC2</li>
+                            <li>Port 4000 is not open in Security Group</li>
+                            <li>Network/firewall blocking the connection</li>
+                            <li>CORS not configured properly</li>
+                        </ul>
+                    </div>
+                `;
+            }
+        }
+
+        function clearCache() {
+            if ('caches' in window) {
+                caches.keys().then(names => {
+                    names.forEach(name => {
+                        caches.delete(name);
+                    });
+                });
+            }
+            
+            // Clear localStorage
+            localStorage.clear();
+            sessionStorage.clear();
+            
+            alert('✅ Cache cleared! The page will reload now.');
+            window.location.reload(true);
+        }
+
+        function goToApp() {
+            window.location.href = '/';
+        }
+
+        // Auto test on load
+        window.onload = () => {
+            testConnection();
+        };
+    </script>
+</body>
+</html>
